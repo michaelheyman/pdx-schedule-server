@@ -1,7 +1,5 @@
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE DeriveGeneric #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RankNTypes #-}
@@ -12,39 +10,46 @@
 
 module Server where
 
-import Prelude ()
-import Prelude.Compat
+import           Prelude                        ( )
+import           Prelude.Compat
 
-import Control.Monad.Except
-import Control.Monad.Reader
-import Data.Aeson
-import Data.Aeson.Types
-import Data.Attoparsec.ByteString
-import Data.ByteString (ByteString)
-import Data.List
-import Data.Maybe
-import Data.String.Conversions
-import Data.Time.Calendar
-import GHC.Generics
+import           Control.Monad.Except
+import           Control.Monad.Reader
+import           Data.Aeson
+import           Data.Aeson.Types
+import           Data.Attoparsec.ByteString
+import           Data.ByteString                ( ByteString )
+import           Data.List
+import           Data.Maybe
+import           Data.String.Conversions
+import           Data.Time.Calendar
+import           GHC.Generics
 --import Lucid
-import Network.HTTP.Media ((//), (/:))
-import Network.Wai
-import Network.Wai.Handler.Warp
-import Servant
-import System.Directory
-import Text.Blaze
-import Text.Blaze.Html.Renderer.Utf8
-import Servant.Types.SourceT (source)
+import           Network.HTTP.Media             ( (//)
+                                                , (/:)
+                                                )
+import           Network.Wai
+import           Network.Wai.Handler.Warp
+import           Servant
+import           System.Directory
+import           Text.Blaze
+import           Text.Blaze.Html.Renderer.Utf8
+import           Servant.Types.SourceT          ( source )
 import qualified Data.Aeson.Parser
 import qualified Text.Blaze.Html
-import Schema
-import Database.Beam.Backend.SQL.SQL92 (IsSql92Syntax, Sql92SanityCheck)
-import Control.Lens ((^.))
+import           Schema
+import           Database.Beam.Backend.SQL.SQL92
+                                                ( IsSql92Syntax
+                                                , Sql92SanityCheck
+                                                )
+import           Control.Lens                   ( (^.) )
 
 import           Database.Beam
 
 import           Database.Beam.Sqlite
-import           Database.SQLite.Simple (open, Connection)
+import           Database.SQLite.Simple         ( open
+                                                , Connection
+                                                )
 
 type TermAPI = "terms" :> Get '[JSON] [Term]
 type ClassOfferingAPI = "classes" :> Get '[JSON] [ClassOffering]
@@ -98,7 +103,7 @@ getAllTerms = do
   liftIO
     $ runBeamSqliteDebug putStrLn conn
     $ runSelectReturningList
-    $ select 
+    $ select
     $ all_ (_scheduleTerm scheduleDb)
 
 
@@ -117,26 +122,24 @@ getAllTerms = do
 fullTermList :: IO [Term]
 fullTermList = do
   conn <- open "app.db"
-  runBeamSqliteDebug putStrLn conn $ do
-    terms <- runSelectReturningList $ select (all_ (_scheduleTerm scheduleDb))
-    return terms
+  runBeamSqliteDebug putStrLn conn $ runSelectReturningList $ select
+    (all_ (_scheduleTerm scheduleDb))
 
 fullClassList :: IO [ClassOffering]
 fullClassList = do
   conn <- open "app.db"
-  runBeamSqliteDebug putStrLn conn $ do
-    classes <- runSelectReturningList $ select (all_ (_scheduleClassOffering scheduleDb))
-    return classes
+  runBeamSqliteDebug putStrLn conn $ runSelectReturningList $ select
+    (all_ (_scheduleClassOffering scheduleDb))
 
 findClassList :: IO [(ClassOffering, Course, Instructor, Term)]
 findClassList = do
   conn <- open "app.db"
-  runBeamSqlite conn $ do
-    json <- runSelectReturningList $ select $ do
-      classOffering <- all_ (scheduleDb ^. scheduleClassOffering)
-      course        <- related_ (scheduleDb ^. scheduleCourse) (_classOfferingCourseId classOffering)
-      instructor    <- related_ (scheduleDb ^. scheduleInstructor) (_classOfferingInstructorId classOffering)
-      term          <- related_ (scheduleDb ^. scheduleTerm) (_classOfferingTerm classOffering)
-      pure (classOffering, course, instructor, term)
-    return json
-
+  runBeamSqlite conn $ runSelectReturningList $ select $ do
+    classOffering <- all_ (scheduleDb ^. scheduleClassOffering)
+    course        <- related_ (scheduleDb ^. scheduleCourse)
+                              (_classOfferingCourseId classOffering)
+    instructor <- related_ (scheduleDb ^. scheduleInstructor)
+                           (_classOfferingInstructorId classOffering)
+    term <- related_ (scheduleDb ^. scheduleTerm)
+                     (_classOfferingTerm classOffering)
+    pure (classOffering, course, instructor, term)

@@ -5,7 +5,6 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE StandaloneDeriving    #-}
-{-# LANGUAGE TypeApplications      #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE TypeSynonymInstances  #-}
 {-# LANGUAGE ImpredicativeTypes    #-}
@@ -16,12 +15,14 @@ import           Database.Beam
 import           Database.Beam.Backend
 import           Database.Beam.Migrate
 import           Database.Beam.Sqlite
-import           Database.SQLite.Simple (open, Connection)
+import           Database.SQLite.Simple         ( open
+                                                , Connection
+                                                )
 
-import           Data.Int               (Int64)
-import           Data.Text              (Text)
-import           Data.Time              (UTCTime)
-import           Data.UUID              (UUID)
+import           Data.Int                       ( Int64 )
+import           Data.Text                      ( Text )
+import           Data.Time                      ( UTCTime )
+import           Data.UUID                      ( UUID )
 
 import           Data.Aeson
 
@@ -36,13 +37,8 @@ data InstructorT f = Instructor
   , _instructorUrl          :: Columnar f (Maybe Text)
   } deriving (Generic)
 
-Instructor 
-  (LensFor instructorInstructorId) 
-  (LensFor instructorFullName) 
-  (LensFor instructorFirstName) 
-  (LensFor instructorLastName) 
-  (LensFor instructorRating) 
-  (LensFor instructorUrl) = tableLenses
+Instructor (LensFor instructorInstructorId) (LensFor instructorFullName) (LensFor instructorFirstName) (LensFor instructorLastName) (LensFor instructorRating) (LensFor instructorUrl)
+  = tableLenses
 
 instance ToJSON Instructor where
   toJSON (Instructor id fullName firstName lastName rating url) =
@@ -76,11 +72,8 @@ data CourseT f = Course
   , _courseDiscipline :: Columnar f Text
   } deriving (Generic)
 
-Course 
-  (LensFor courseId) 
-  (LensFor courseName) 
-  (LensFor courseClass) 
-  (LensFor courseDiscipline) = tableLenses
+Course (LensFor courseId) (LensFor courseName) (LensFor courseClass) (LensFor courseDiscipline)
+  = tableLenses
 
 type Course = CourseT Identity
 type CourseId = PrimaryKey CourseT Identity
@@ -112,9 +105,7 @@ data TermT f = Term
   , _termDescription  :: Columnar f Text
   } deriving (Generic)
 
-Term 
-  (LensFor termDate) 
-  (LensFor termDescription) = tableLenses
+Term (LensFor termDate) (LensFor termDescription) = tableLenses
 
 type Term = TermT Identity
 type TermDate = PrimaryKey TermT Identity
@@ -149,16 +140,8 @@ data ClassOfferingT f = ClassOffering
   , _classOfferingTimestamp    :: Columnar f Text -- UTCTime
   } deriving (Generic)
 
-ClassOffering 
-  (LensFor classOfferingId)
-  (CourseId        (LensFor classOfferingCourseId))
-  (InstructorId    (LensFor classOfferingInstructorId))
-  (TermDate        (LensFor classOfferingTerm))
-  (LensFor classOfferingCredits)
-  (LensFor classOfferingDays)
-  (LensFor classOfferingTime)
-  (LensFor classOfferingCrn)
-  (LensFor classOfferingTimestamp) = tableLenses
+ClassOffering (LensFor classOfferingId) (CourseId (LensFor classOfferingCourseId)) (InstructorId (LensFor classOfferingInstructorId)) (TermDate (LensFor classOfferingTerm)) (LensFor classOfferingCredits) (LensFor classOfferingDays) (LensFor classOfferingTime) (LensFor classOfferingCrn) (LensFor classOfferingTimestamp)
+  = tableLenses
 
 type ClassOffering = ClassOfferingT Identity
 type ClassOfferingId = PrimaryKey ClassOfferingT Identity
@@ -197,71 +180,71 @@ data ScheduleDB f = ScheduleDB
 
 instance Database be ScheduleDB
 
-ScheduleDB
-  (TableLens scheduleCourse)
-  (TableLens scheduleInstructor)
-  (TableLens scheduleTerm)
-  (TableLens scheduleClassOffering) = dbLenses
+ScheduleDB (TableLens scheduleCourse) (TableLens scheduleInstructor) (TableLens scheduleTerm) (TableLens scheduleClassOffering)
+  = dbLenses
 
 scheduleDb :: DatabaseSettings be ScheduleDB
-scheduleDb = defaultDbSettings `withDbModification`
-             dbModification {
-               _scheduleCourse = 
-                 modifyTable id $
-                   tableModification {
-                       _courseId         = fieldNamed "CourseId",
-                       _courseName       = fieldNamed "Name",
-                       _courseClass      = fieldNamed "Class",
-                       _courseDiscipline = fieldNamed "Discipline"
-               },
-               _scheduleInstructor =
-                 modifyTable id $
-                   tableModification {
-                     _instructorInstructorId = fieldNamed "InstructorId",
-                     _instructorFullName     = fieldNamed "FullName",
-                     _instructorFirstName    = fieldNamed "FirstName",
-                     _instructorLastName     = fieldNamed "LastName",
-                     _instructorRating       = fieldNamed "Rating",
-                     _instructorUrl          = fieldNamed "URL"
-               },
-               _scheduleTerm =
-                 modifyTable id $
-                   tableModification {
-                     _termDate         = fieldNamed "Date",
-                     _termDescription  = fieldNamed "Description"
-               },
-               _scheduleClassOffering =
-                 modifyTable (\_ -> "ClassOffering") $
-                   tableModification {
-                     _classOfferingId           = fieldNamed "ClassOfferingId",
-                     _classOfferingCourseId     = CourseId $ fieldNamed "CourseId",
-                     _classOfferingInstructorId = InstructorId $ "InstructorId",
-                     _classOfferingTerm         = TermDate $ fieldNamed "Term",
-                     _classOfferingCredits      = fieldNamed "Credits",
-                     _classOfferingDays         = fieldNamed "Days",
-                     _classOfferingTime         = fieldNamed "Time",
-                     _classOfferingCrn          = fieldNamed "CRN",
-                     _classOfferingTimestamp    = fieldNamed "Timestamp"
-                 }
-             }
+scheduleDb = defaultDbSettings `withDbModification` dbModification
+  { _scheduleCourse        = modifyTable id $ tableModification
+                               { _courseId         = fieldNamed "CourseId"
+                               , _courseName       = fieldNamed "Name"
+                               , _courseClass      = fieldNamed "Class"
+                               , _courseDiscipline = fieldNamed "Discipline"
+                               }
+  , _scheduleInstructor    = modifyTable id $ tableModification
+                               { _instructorInstructorId = fieldNamed
+                                                             "InstructorId"
+                               , _instructorFullName     = fieldNamed "FullName"
+                               , _instructorFirstName = fieldNamed "FirstName"
+                               , _instructorLastName     = fieldNamed "LastName"
+                               , _instructorRating       = fieldNamed "Rating"
+                               , _instructorUrl          = fieldNamed "URL"
+                               }
+  , _scheduleTerm          = modifyTable id $ tableModification
+                               { _termDate        = fieldNamed "Date"
+                               , _termDescription = fieldNamed "Description"
+                               }
+  , _scheduleClassOffering =
+    modifyTable (\_ -> "ClassOffering") $ tableModification
+      { _classOfferingId           = fieldNamed "ClassOfferingId"
+      , _classOfferingCourseId     = CourseId $ fieldNamed "CourseId"
+      , _classOfferingInstructorId = InstructorId "InstructorId"
+      , _classOfferingTerm         = TermDate $ fieldNamed "Term"
+      , _classOfferingCredits      = fieldNamed "Credits"
+      , _classOfferingDays         = fieldNamed "Days"
+      , _classOfferingTime         = fieldNamed "Time"
+      , _classOfferingCrn          = fieldNamed "CRN"
+      , _classOfferingTimestamp    = fieldNamed "Timestamp"
+      }
+  }
 
 
 term1 :: Term
 term1 = Term 1 "one"
 
 instructor1 :: Instructor
-instructor1 = Instructor 1 "Mark P. Jones" (Just "Mark") (Just "Jones") (Just 4.8) (Just "URL")
+instructor1 = Instructor 1
+                         "Mark P. Jones"
+                         (Just "Mark")
+                         (Just "Jones")
+                         (Just 4.8)
+                         (Just "URL")
 
 course1 :: Course
 course1 = Course 1 "computer science" "cs100" "description"
 
 classoffering1 :: ClassOffering
-classoffering1 = ClassOffering 1 (CourseId 1) (InstructorId 1) (TermDate 1) 4 "TR" "10:00-12:00" 12345 "12:00:00 PM"
+classoffering1 = ClassOffering 1
+                               (CourseId 1)
+                               (InstructorId 1)
+                               (TermDate 1)
+                               4
+                               "TR"
+                               "10:00-12:00"
+                               12345
+                               "12:00:00 PM"
 
 terms1 :: [Term]
-terms1 =
-  [ Term 1 "one"
-  , Term 2 "two"
-  ]
+terms1 = [Term 1 "one", Term 2 "two"]
 
 
