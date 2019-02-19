@@ -9,7 +9,7 @@
 {-# LANGUAGE TypeSynonymInstances  #-}
 {-# LANGUAGE ImpredicativeTypes    #-}
 
-module Schema where
+module Database.Schema where
 
 import           Database.Beam
 import           Database.Beam.Backend
@@ -137,7 +137,7 @@ data ClassOfferingT f = ClassOffering
   , _classOfferingDays         :: Columnar f Text
   , _classOfferingTime         :: Columnar f Text
   , _classOfferingCrn          :: Columnar f Int64
-  , _classOfferingTimestamp    :: Columnar f Text -- UTCTime
+  , _classOfferingTimestamp    :: Columnar f Text -- TODO: UTCTime
   } deriving (Generic)
 
 ClassOffering (LensFor classOfferingId) (CourseId (LensFor classOfferingCourseId)) (InstructorId (LensFor classOfferingInstructorId)) (TermDate (LensFor classOfferingTerm)) (LensFor classOfferingCredits) (LensFor classOfferingDays) (LensFor classOfferingTime) (LensFor classOfferingCrn) (LensFor classOfferingTimestamp)

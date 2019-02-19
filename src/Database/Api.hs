@@ -1,7 +1,7 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE TypeOperators #-}
+-- {-# LANGUAGE DataKinds #-}
+-- {-# LANGUAGE TypeOperators #-}
 
-module Api where
+module Database.Api where
 
 import           Data.Text
 import           Data.Time                      ( UTCTime )
