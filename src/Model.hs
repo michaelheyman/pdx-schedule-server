@@ -1,16 +1,11 @@
-{-# LANGUAGE OverloadedStrings     #-}
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE StandaloneDeriving #-}
-{-# LANGUAGE DeriveAnyClass #-} -- needed to work with ToJSON
+{-# LANGUAGE DeriveGeneric     #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Model where
 
-import           Data.Text                      ( Text )
+import           Data.Aeson   (ToJSON (..), object, (.=))
+import           Data.Text    (Text)
 import           GHC.Generics
-import           Data.Aeson                     ( (.=)
-                                                , ToJSON(..)
-                                                , object
-                                                )
 
 
 data Instructor = Instructor
@@ -48,8 +43,8 @@ instance ToJSON Course where
 
 
 data Term = Term
-  { termDate         :: Int
-  , termDescription  :: Text
+  { termDate        :: Int
+  , termDescription :: Text
   } deriving (Generic)
 
 instance ToJSON Term where
@@ -121,4 +116,10 @@ classoffering2 =
                   12345
                   "12:00:00 PM"
   ]
+
+type ClassQueryResult =
+  (ClassOffering
+  , Course
+  , Instructor
+  , Term)
 
