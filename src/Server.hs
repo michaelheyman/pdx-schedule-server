@@ -42,7 +42,9 @@ import           Database.Beam.Backend.SQL.SQL92
                                                 ( IsSql92Syntax
                                                 , Sql92SanityCheck
                                                 )
-import           Control.Lens                   ( (^.) )
+import           Control.Lens                   ( (^.)
+                                                , view
+                                                )
 
 import           Database.Beam
 
@@ -51,10 +53,20 @@ import           Database.SQLite.Simple         ( open
                                                 , Connection
                                                 )
 
+import qualified Model                         as Model
+
 type TermAPI = "terms" :> Get '[JSON] [Term]
 type ClassOfferingAPI = "classes" :> Get '[JSON] [ClassOffering]
 type CourseAPI = "courses" :> Get '[JSON] [Course]
 type InstructorAPI = "classes" :> Get '[JSON] [Instructor]
+type NewAPI = "new" :> Get '[JSON] [Model.ClassOffering]
+
+type ClassQueryResult =
+  (ClassOffering
+  , Course
+  , Instructor
+  , Term)
+
 
 server1 :: Server TermAPI
 -- server1 = return terms1
@@ -63,8 +75,12 @@ server1 = liftIO fullTermList
 server2 :: Server ClassOfferingAPI
 server2 = liftIO fullClassList
 
--- server3 :: Server (ClassOfferingAPI, CourseAPI, InstructorAPI, TermAPI)
+-- server3 :: Server ClassQueryResult
 -- server3 = liftIO findClassList
+
+server4 :: Server NewAPI
+server4 = return Model.classoffering2
+
 
 termAPI :: Proxy TermAPI
 termAPI = Proxy :: Proxy TermAPI
@@ -72,23 +88,29 @@ termAPI = Proxy :: Proxy TermAPI
 classAPI :: Proxy ClassOfferingAPI
 classAPI = Proxy :: Proxy ClassOfferingAPI
 
-allAPI :: Proxy (ClassOfferingAPI, CourseAPI, InstructorAPI, TermAPI)
-allAPI = Proxy :: Proxy (ClassOfferingAPI, CourseAPI, InstructorAPI, TermAPI)
+newAPI :: Proxy NewAPI
+newAPI = Proxy :: Proxy NewAPI
+
+allAPI :: Proxy ClassQueryResult
+allAPI = Proxy :: Proxy ClassQueryResult
 
 
 app1 :: Application
 app1 = serve termAPI server1
 
-app2 :: Application
-app2 = serve classAPI server2
+-- app2 :: Application
+-- app2 = serve classAPI server2
 
 -- app3 :: Application
 -- app3 = serve allAPI server3
 
+app4 :: Application
+app4 = serve newAPI server4
+
 main :: IO ()
 main = do
   putStrLn "Running server on http://localhost:8081/terms"
-  run 8081 app2
+  run 8081 app4
 
 -- messages :: ( IsSql92Syntax cmd, Sql92SanityCheck cmd, MonadBeam cmd be hdl m) => Connection -> Handler [Term]
 -- messages :: Connection -> Handler [Term]
@@ -131,7 +153,7 @@ fullClassList = do
   runBeamSqliteDebug putStrLn conn $ runSelectReturningList $ select
     (all_ (_scheduleClassOffering scheduleDb))
 
-findClassList :: IO [(ClassOffering, Course, Instructor, Term)]
+findClassList :: IO [ClassQueryResult]
 findClassList = do
   conn <- open "app.db"
   runBeamSqlite conn $ runSelectReturningList $ select $ do
@@ -143,3 +165,7 @@ findClassList = do
     term <- related_ (scheduleDb ^. scheduleTerm)
                      (_classOfferingTerm classOffering)
     pure (classOffering, course, instructor, term)
+
+
+toClassList :: ClassQueryResult -> Model.ClassOffering
+toClassList (co, c, i, t) = undefined
