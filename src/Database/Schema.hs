@@ -37,17 +37,13 @@ data InstructorT f = Instructor
   , _instructorUrl          :: Columnar f (Maybe Text)
   } deriving (Generic)
 
-Instructor (LensFor instructorInstructorId) (LensFor instructorFullName) (LensFor instructorFirstName) (LensFor instructorLastName) (LensFor instructorRating) (LensFor instructorUrl)
-  = tableLenses
-
-instance ToJSON Instructor where
-  toJSON (Instructor id fullName firstName lastName rating url) =
-    object [ "id"        .= id
-           , "fullName"  .= fullName
-           , "firstName" .= firstName
-           , "lastName"  .= lastName
-           , "rating"    .= rating
-           , "url"       .= url  ]
+Instructor (LensFor instructorInstructorId) 
+           (LensFor instructorFullName) 
+           (LensFor instructorFirstName) 
+           (LensFor instructorLastName) 
+           (LensFor instructorRating) 
+           (LensFor instructorUrl) = 
+           tableLenses
 
 type Instructor = InstructorT Identity
 type InstructorId = PrimaryKey InstructorT Identity
@@ -72,8 +68,11 @@ data CourseT f = Course
   , _courseDiscipline :: Columnar f Text
   } deriving (Generic)
 
-Course (LensFor courseId) (LensFor courseName) (LensFor courseClass) (LensFor courseDiscipline)
-  = tableLenses
+Course (LensFor courseId) 
+       (LensFor courseName) 
+       (LensFor courseClass) 
+       (LensFor courseDiscipline) = 
+       tableLenses
 
 type Course = CourseT Identity
 type CourseId = PrimaryKey CourseT Identity
@@ -89,15 +88,6 @@ instance Table CourseT where
   data PrimaryKey CourseT f = CourseId (Columnar f Int64) deriving Generic
   primaryKey = CourseId . _courseId
 
-instance ToJSON Course where
-  toJSON (Course courseId name cclass discipline) =
-    object [ "courseId"   .= courseId
-           , "name"       .= name
-           , "cclass"     .= cclass
-           , "discipline" .= discipline ]
-
--- TODO: yank these ToJSON statements to Api.hs
-
 -- Term
 
 data TermT f = Term
@@ -105,7 +95,9 @@ data TermT f = Term
   , _termDescription  :: Columnar f Text
   } deriving (Generic)
 
-Term (LensFor termDate) (LensFor termDescription) = tableLenses
+Term (LensFor termDate) 
+     (LensFor termDescription) =
+     tableLenses
 
 type Term = TermT Identity
 type TermDate = PrimaryKey TermT Identity
@@ -121,11 +113,6 @@ instance Table TermT where
   data PrimaryKey TermT f = TermDate (Columnar f Int64) deriving Generic
   primaryKey = TermDate . _termDate
 
-instance ToJSON Term where
-  toJSON (Term date description) =
-    object [ "date"        .= date
-           , "description" .= description ]
-
 -- ClassOffering
 
 data ClassOfferingT f = ClassOffering
@@ -140,8 +127,16 @@ data ClassOfferingT f = ClassOffering
   , _classOfferingTimestamp    :: Columnar f Text -- TODO: UTCTime
   } deriving (Generic)
 
-ClassOffering (LensFor classOfferingId) (CourseId (LensFor classOfferingCourseId)) (InstructorId (LensFor classOfferingInstructorId)) (TermDate (LensFor classOfferingTerm)) (LensFor classOfferingCredits) (LensFor classOfferingDays) (LensFor classOfferingTime) (LensFor classOfferingCrn) (LensFor classOfferingTimestamp)
-  = tableLenses
+ClassOffering (LensFor classOfferingId) 
+              (CourseId     (LensFor classOfferingCourseId))
+              (InstructorId (LensFor classOfferingInstructorId))
+              (TermDate     (LensFor classOfferingTerm))
+              (LensFor classOfferingCredits)
+              (LensFor classOfferingDays)
+              (LensFor classOfferingTime)
+              (LensFor classOfferingCrn)
+              (LensFor classOfferingTimestamp) =
+              tableLenses
 
 type ClassOffering = ClassOfferingT Identity
 type ClassOfferingId = PrimaryKey ClassOfferingT Identity
@@ -157,18 +152,6 @@ instance Table ClassOfferingT where
   data PrimaryKey ClassOfferingT f = ClassOfferingId (Columnar f Int64) deriving Generic
   primaryKey = ClassOfferingId . _classOfferingId
 
-instance ToJSON ClassOffering where
-  toJSON (ClassOffering classOfferingId courseId instructorId term credits days time crn timestamp) =
-    object [ "classOfferingId" .= classOfferingId
-           -- , "courseId"        .= courseId
-           -- , "instructorId"    .= instructorId
-           -- , "term"            .= term
-           , "credits"         .= credits
-           , "days"            .= days
-           , "time"            .= time
-           , "crn"             .= crn
-           , "timestamp"       .= timestamp ]
-
 -- Database
 
 data ScheduleDB f = ScheduleDB
@@ -180,8 +163,11 @@ data ScheduleDB f = ScheduleDB
 
 instance Database be ScheduleDB
 
-ScheduleDB (TableLens scheduleCourse) (TableLens scheduleInstructor) (TableLens scheduleTerm) (TableLens scheduleClassOffering)
-  = dbLenses
+ScheduleDB (TableLens scheduleCourse)
+           (TableLens scheduleInstructor)
+           (TableLens scheduleTerm)
+           (TableLens scheduleClassOffering) =
+           dbLenses
 
 scheduleDb :: DatabaseSettings be ScheduleDB
 scheduleDb = defaultDbSettings `withDbModification` dbModification
@@ -246,5 +232,3 @@ classoffering1 = ClassOffering 1
 
 terms1 :: [Term]
 terms1 = [Term 1 "one", Term 2 "two"]
-
-

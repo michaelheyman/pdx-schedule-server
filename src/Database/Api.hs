@@ -1,6 +1,3 @@
--- {-# LANGUAGE DataKinds #-}
--- {-# LANGUAGE TypeOperators #-}
-
 module Database.Api where
 
 import           Data.Text
