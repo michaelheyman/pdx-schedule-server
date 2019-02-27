@@ -11,6 +11,7 @@
 
 module Database.Schema where
 
+import           Control.Lens           (view, (^.)) -- TODO remove after testing lens
 import           Database.Beam
 import           Database.Beam.Backend
 import           Database.Beam.Migrate
@@ -59,6 +60,15 @@ instance Table InstructorT where
   data PrimaryKey InstructorT f = InstructorId (Columnar f Int64) deriving Generic
   primaryKey = InstructorId . _instructorInstructorId
 
+instance ToJSON Instructor where
+  toJSON (Instructor id fullName firstName lastName rating url) =
+    object [ "id"        .= id
+           , "fullName"  .= fullName
+           , "firstName" .= firstName
+           , "lastName"  .= lastName
+           , "rating"    .= rating
+           , "url"       .= url  ]
+
 -- Course
 
 data CourseT f = Course
@@ -88,6 +98,14 @@ instance Table CourseT where
   data PrimaryKey CourseT f = CourseId (Columnar f Int64) deriving Generic
   primaryKey = CourseId . _courseId
 
+instance ToJSON Course where
+  toJSON (Course courseId name number discipline) =
+    object [ "id"         .= courseId
+           , "name"       .= name
+           , "number"     .= number
+           , "discipline" .= discipline ]
+
+
 -- Term
 
 data TermT f = Term
@@ -112,6 +130,12 @@ instance Beamable (PrimaryKey TermT)
 instance Table TermT where
   data PrimaryKey TermT f = TermDate (Columnar f Int64) deriving Generic
   primaryKey = TermDate . _termDate
+
+instance ToJSON Term where
+  toJSON (Term date description) =
+    object [ "date"        .= date
+           , "description" .= description ]
+
 
 -- ClassOffering
 
@@ -203,32 +227,3 @@ scheduleDb = defaultDbSettings `withDbModification` dbModification
       , _classOfferingTimestamp    = fieldNamed "Timestamp"
       }
   }
-
-
-term1 :: Term
-term1 = Term 1 "one"
-
-instructor1 :: Instructor
-instructor1 = Instructor 1
-                         "Mark P. Jones"
-                         (Just "Mark")
-                         (Just "Jones")
-                         (Just 4.8)
-                         (Just "URL")
-
-course1 :: Course
-course1 = Course 1 "computer science" "cs100" "description"
-
-classoffering1 :: ClassOffering
-classoffering1 = ClassOffering 1
-                               (CourseId 1)
-                               (InstructorId 1)
-                               (TermDate 1)
-                               4
-                               "TR"
-                               "10:00-12:00"
-                               12345
-                               "12:00:00 PM"
-
-terms1 :: [Term]
-terms1 = [Term 1 "one", Term 2 "two"]
