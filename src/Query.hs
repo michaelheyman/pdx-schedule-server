@@ -22,7 +22,7 @@ type ClassQueryResult =
   , Instructor
   , Term)
 
-data ClassInstance = ClassInstance
+data Class = Class
   { classId    :: Int64
   , course     :: Course
   , instructor :: Maybe Instructor
@@ -34,8 +34,8 @@ data ClassInstance = ClassInstance
   , timestamp  :: Text -- UTCTime
   } deriving (Show)
 
-instance ToJSON ClassInstance where
-  toJSON (ClassInstance classId course instructor term credits days time crn timestamp) =
+instance ToJSON Class where
+  toJSON (Class classId course instructor term credits days time crn timestamp) =
     object [ "id"         .= classId
            , "course"     .= course
            , "instructor" .= instructor
@@ -75,10 +75,9 @@ findClassInstances = do
     --pure $ fmap toClassInstance (classOffering, course, instructor, term)
     pure (classOffering, course, instructor, term)
 
-classList :: [ClassInstance]
-classList = undefined
--- classList = do query <- findClassList
---                pure query
+classList :: [Class]
+classList = map toClass [classQuery] -- TODO: make this actual live data
+
 
 
 -- Stub elements for testing
@@ -91,6 +90,18 @@ instructor1 = Instructor 1 "mark p jones" (Just "mark") (Just "jones") (Just 4.8
 
 term1 :: Term
 term1 = Term 20190101 "winter 2019"
+
+classOfferingList :: [ClassOffering]
+classOfferingList = [ ClassOffering
+    1
+    (CourseId     (_courseId course1))
+    (InstructorId (_instructorInstructorId instructor1))
+    (TermDate     (_termDate term1))
+    4
+    "TR"
+    "08:00 am"
+    40912
+    "timestamp" ]
 
 classoffering1 :: ClassOffering
 classoffering1 = ClassOffering
@@ -107,8 +118,8 @@ classoffering1 = ClassOffering
 classQuery :: ClassQueryResult
 classQuery = (classoffering1, course1, instructor1, term1)
 
-toClassInstance :: ClassQueryResult -> ClassInstance
-toClassInstance c = ClassInstance
+toClass :: ClassQueryResult -> Class
+toClass c = Class
     (_classOfferingId classOffering)
     course
     (Just instructor)
@@ -144,3 +155,5 @@ fullClassList = do
   conn <- open "app.db"
   runBeamSqliteDebug putStrLn conn $ runSelectReturningList $ select
     (all_ (_scheduleClassOffering scheduleDb))
+--
+-- `runListT $ fmap f (ListT strings)

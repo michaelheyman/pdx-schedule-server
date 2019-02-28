@@ -1,7 +1,5 @@
 {-# LANGUAGE DataKinds     #-}
 {-# LANGUAGE TypeOperators #-}
--- {-# LANGUAGE TypeFamilies #-}         -- allTerms
--- {-# LANGUAGE AllowAmbiguousTypes #-}  -- allTerms
 
 module Api where
 
@@ -19,12 +17,16 @@ type ClassOfferingAPI = "classes" :> Get '[JSON] [ClassOffering]
 type CourseAPI = "courses" :> Get '[JSON] [Course]
 type InstructorAPI = "instructors" :> Get '[JSON] [Instructor]
 -- type NewAPI = "new" :> Get '[JSON] [Model.ClassOffering]
+type ClassesAPI = "classes" :> Get '[JSON] [Class]
 
 termAPI :: Proxy TermAPI
 termAPI = Proxy :: Proxy TermAPI
 
 classOfferingAPI :: Proxy ClassOfferingAPI
 classOfferingAPI = Proxy :: Proxy ClassOfferingAPI
+
+classesAPI :: Proxy ClassesAPI
+classesAPI = Proxy :: Proxy ClassesAPI
 
 -- newAPI :: Proxy NewAPI
 -- newAPI = Proxy :: Proxy NewAPI

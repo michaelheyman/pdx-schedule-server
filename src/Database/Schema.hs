@@ -176,6 +176,18 @@ instance Table ClassOfferingT where
   data PrimaryKey ClassOfferingT f = ClassOfferingId (Columnar f Int64) deriving Generic
   primaryKey = ClassOfferingId . _classOfferingId
 
+instance ToJSON ClassOffering where
+  toJSON (ClassOffering classId course instructor term credits days time crn timestamp) =
+    object [ "id"         .= classId
+           -- , "course"     .= course
+           -- , "instructor" .= instructor
+           -- , "term"       .= term
+           , "credits"    .= credits
+           , "days"       .= days
+           , "time"       .= time
+           , "crn"        .= crn
+           , "timestamp"  .= timestamp ]
+
 -- Database
 
 data ScheduleDB f = ScheduleDB
