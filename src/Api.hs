@@ -20,6 +20,8 @@ import           Types
 
 type ClassOfferingAPI = "classes" :> Get '[JSON] [ClassOffering]
 type ClassesAPI = "classes" :> Get '[JSON] [Class]
+type API = "classes" :> Get '[JSON] [Class] :<|>
+           Get '[HTML] (Html ())
 
 classOfferingAPI :: Proxy ClassOfferingAPI
 classOfferingAPI = Proxy :: Proxy ClassOfferingAPI
@@ -31,10 +33,6 @@ type StaticAPI = "static" :> Raw
 
 staticAPI :: Proxy StaticAPI
 staticAPI = Proxy
-
-type API =
-    "classes" :> Get '[JSON] [Class] :<|>
-    Raw
 
 api :: Proxy API
 api = Proxy

@@ -22,6 +22,6 @@ main = do
 testmain :: IO ()
 testmain = do
   putStrLn ("Running server on http://localhost:" ++ show port ++ "/")
-  run port (simpleCors app5)
+  run port (simpleCors appAPI)
  where
    port = 8080

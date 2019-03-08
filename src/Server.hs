@@ -14,6 +14,9 @@ server = return classList
 --              cls <- evaluate $ map toClass res
 --              pure cls
 
+serveAPI :: Server API
+serveAPI = return classList :<|> return pageHTML
+
 server2 :: [Class] -> Server ClassesAPI
 server2 = return
 
@@ -46,3 +49,6 @@ app5 = serve testapi server100
 
 --server200 :: Server ClassesAPI
 --server200 = return _
+
+appAPI :: Application
+appAPI = serve api serveAPI
