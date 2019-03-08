@@ -2,83 +2,103 @@
 
 module Query where
 
-import           Control.Lens           (view, (^.), _1, _2, _3, _4)
+import           Control.Exception.Base (evaluate)
+
+import           Control.Lens           ((^.))
 import           Control.Monad.Reader   (ReaderT, ask, liftIO)
-import           Data.Aeson             (ToJSON (..), object, (.=))
-import           Data.Text.Internal
-import           Database.Beam
-import           Database.Beam.Query
-import           Database.Beam.Sqlite
+import           Database.Beam.Query    (all_, guard_, related_,
+                                         runSelectReturningList, select, val_,
+                                         (==.))
+import           Database.Beam.Sqlite   (runBeamSqlite, runBeamSqliteDebug)
 import           Database.Schema
-import           Database.SQLite.Simple
-import           GHC.Int
+import           Database.SQLite.Simple (Connection, open)
 import           Servant                (Handler)
-
--- import qualified Model                  as Model
-
-type ClassQueryResult =
-  (ClassOffering
-  , Course
-  , Instructor
-  , Term)
-
-data Class = Class
-  { classId    :: Int64
-  , course     :: Course
-  , instructor :: Maybe Instructor
-  , term       :: Term
-  , credits    :: Int64
-  , days       :: Text
-  , time       :: Text
-  , crn        :: Int64
-  , timestamp  :: Text -- UTCTime
-  } deriving (Show)
-
-instance ToJSON Class where
-  toJSON (Class classId course instructor term credits days time crn timestamp) =
-    object [ "id"         .= classId
-           , "course"     .= course
-           , "instructor" .= instructor
-           , "term"       .= term
-           , "credits"    .= credits
-           , "days"       .= days
-           , "time"       .= time
-           , "crn"        .= crn
-           , "timestamp"  .= timestamp ]
-
+import           Types
 
 findClassList :: IO [ClassQueryResult]
 findClassList = do
   conn <- open "app.db"
-  runBeamSqlite conn $ runSelectReturningList $ select $ do
-    classOffering <- all_     (scheduleDb ^. scheduleClassOffering)
-    course        <- related_ (scheduleDb ^. scheduleCourse)
-                              (_classOfferingCourseId classOffering)
-    instructor    <- related_ (scheduleDb ^. scheduleInstructor)
-                              (_classOfferingInstructorId classOffering)
-    term          <- related_ (scheduleDb ^. scheduleTerm)
-                              (_classOfferingTerm classOffering)
-    pure (classOffering, course, instructor, term)
+  runBeamSqliteDebug putStrLn conn
+    $ runSelectReturningList
+    $ select
+    $ do classOffering <- all_     (scheduleDb ^. scheduleClassOffering)
+         course        <- related_ (scheduleDb ^. scheduleCourse)
+                                   (_classOfferingCourseId classOffering)
+         instructor    <- related_ (scheduleDb ^. scheduleInstructor)
+                                   (_classOfferingInstructorId classOffering)
+         term          <- related_ (scheduleDb ^. scheduleTerm)
+                                   (_classOfferingTerm classOffering)
+         pure (classOffering, course, instructor, term)
 
+getAllTerms :: ReaderT Connection Handler [Term]
+getAllTerms = do
+  conn <- ask
+  liftIO
+    $ runBeamSqliteDebug putStrLn conn
+    $ runSelectReturningList
+    $ select
+    $ all_ (_scheduleTerm scheduleDb)
 
-findClassInstances :: IO [ClassQueryResult]
-findClassInstances = do
+fullTermList :: IO [Term]
+fullTermList = do
   conn <- open "app.db"
-  runBeamSqlite conn $ runSelectReturningList $ select $ do
-    classOffering <- all_     (scheduleDb ^. scheduleClassOffering)
+  runBeamSqliteDebug putStrLn conn
+    $ runSelectReturningList
+    $ select (all_ (_scheduleTerm scheduleDb))
+
+fullClassList :: IO [ClassOffering]
+fullClassList = do
+  conn <- open "app.db"
+  runBeamSqliteDebug putStrLn conn
+    $ runSelectReturningList
+    $ select (all_ (_scheduleClassOffering scheduleDb))
+
+findInstructors :: Connection -> IO ()
+findInstructors conn = runBeamSqlite conn $ do
+  instructors <- runSelectReturningList
+    $ select (all_ (_scheduleInstructor scheduleDb))
+  mapM_ (liftIO . print) instructors
+
+-- listTerms :: ( IsSql92Syntax cmd, Sql92SanityCheck cmd
+--              , MonadBeam cmd be hdl m)
+--             => m [Term]
+-- listTerms = runSelectReturningList $ select (all_ (_scheduleTerm scheduleDb))
+
+findTerms :: Connection -> IO ()
+findTerms conn = runBeamSqlite conn $ do
+  terms <- runSelectReturningList $ select (all_ (_scheduleTerm scheduleDb))
+  mapM_ (liftIO . print) terms
+
+findMarkJones :: Connection -> IO ()
+findMarkJones conn = runBeamSqlite conn $ do
+  json <- runSelectReturningList $ select $ do
+    instructors <- all_ (scheduleDb ^. scheduleInstructor)
+    guard_ (instructors ^. instructorFullName ==. val_ "Mark P. Jones")
+    return instructors
+  mapM_ (liftIO . print) json
+
+findClasses :: Connection -> IO ()
+findClasses conn = runBeamSqlite conn $ do
+  json <- runSelectReturningList $ select $ do
+    classOffering <- all_ (scheduleDb ^. scheduleClassOffering)
     course        <- related_ (scheduleDb ^. scheduleCourse)
                               (_classOfferingCourseId classOffering)
-    instructor    <- related_ (scheduleDb ^. scheduleInstructor)
-                              (_classOfferingInstructorId classOffering)
-    term          <- related_ (scheduleDb ^. scheduleTerm)
-                              (_classOfferingTerm classOffering)
-    --pure $ fmap toClassInstance (classOffering, course, instructor, term)
+    instructor <- related_ (scheduleDb ^. scheduleInstructor)
+                           (_classOfferingInstructorId classOffering)
+    term <- related_ (scheduleDb ^. scheduleTerm)
+                     (_classOfferingTerm classOffering)
     pure (classOffering, course, instructor, term)
+  mapM_ (liftIO . print) json
 
-classList :: [Class]
-classList = map toClass [classQuery] -- TODO: make this actual live data
+findTermList :: Connection -> IO [Term]
+findTermList conn = runBeamSqlite conn $ runSelectReturningList $ select
+  (all_ (_scheduleTerm scheduleDb))
 
-
+ft :: IO [Term]
+ft = do
+  conn <- open "app.db"
+  runBeamSqlite conn $ runSelectReturningList $ select
+    (all_ (_scheduleTerm scheduleDb))
 
 -- Stub elements for testing
 
@@ -118,42 +138,5 @@ classoffering1 = ClassOffering
 classQuery :: ClassQueryResult
 classQuery = (classoffering1, course1, instructor1, term1)
 
-toClass :: ClassQueryResult -> Class
-toClass c = Class
-    (_classOfferingId classOffering)
-    course
-    (Just instructor)
-    term
-    (_classOfferingCredits classOffering)
-    (_classOfferingDays classOffering)
-    (_classOfferingTime classOffering)
-    (_classOfferingCrn classOffering)
-    (_classOfferingTimestamp classOffering)
-  where
-    classOffering = view _1 c
-    course        = view _2 c
-    instructor    = view _3 c
-    term          = view _4 c
-
-getAllTerms :: ReaderT Connection Handler [Term]
-getAllTerms = do
-  conn <- ask
-  liftIO
-    $ runBeamSqliteDebug putStrLn conn
-    $ runSelectReturningList
-    $ select
-    $ all_ (_scheduleTerm scheduleDb)
-
-fullTermList :: IO [Term]
-fullTermList = do
-  conn <- open "app.db"
-  runBeamSqliteDebug putStrLn conn $ runSelectReturningList $ select
-    (all_ (_scheduleTerm scheduleDb))
-
-fullClassList :: IO [ClassOffering]
-fullClassList = do
-  conn <- open "app.db"
-  runBeamSqliteDebug putStrLn conn $ runSelectReturningList $ select
-    (all_ (_scheduleClassOffering scheduleDb))
---
--- `runListT $ fmap f (ListT strings)
+classList :: [Class]
+classList = map toClass [classQuery]

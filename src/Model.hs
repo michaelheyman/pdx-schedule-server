@@ -14,10 +14,10 @@ import           Data.Aeson                     ( (.=)
 data Instructor = Instructor
   { instructorId :: Int
   , fullName     :: Text
-  , firstName    :: (Maybe Text)
-  , lastName     :: (Maybe Text)
-  , rating       :: (Maybe Float)
-  , url          :: (Maybe Text)
+  , firstName    :: Maybe Text
+  , lastName     :: Maybe Text
+  , rating       :: Maybe Float
+  , url          :: Maybe Text
   } deriving (Generic)
 
 instance ToJSON Instructor where

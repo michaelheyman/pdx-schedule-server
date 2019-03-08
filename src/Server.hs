@@ -1,20 +1,21 @@
 module Server where
 
 import           Api
--- import           Model
-import           Control.Exception.Base
-import           Network.Wai.Handler.Warp (run)
 import           Query
-import           Servant                  (Application, Server, serve)
-
--- server2 :: Server allAPI
--- server2 = return allAPI
+import           Servant
+import           Types
 
 server :: Server ClassesAPI
 server = return classList
+-- [Class]
+
+-- serverx :: Server ClassesAPI
+-- serverx = do res <- findClassList
+--              cls <- evaluate $ map toClass res
+--              pure cls
 
 server2 :: [Class] -> Server ClassesAPI
-server2 c = return c
+server2 = return
 
 serverNonDb :: Server ClassOfferingAPI
 serverNonDb = return classOfferingList
@@ -25,13 +26,23 @@ appNonDb = serve classOfferingAPI serverNonDb
 app :: Application
 app = serve classesAPI server
 
-main :: IO ()
-main = do
-  putStrLn "Running server on http://localhost:8081/classes"
-  res <- findClassInstances
-  cls <- evaluate $ map toClass res
-  run 8081 (app cls)
- where
-  app :: [Class] -> Application
-  app cls = serve classesAPI (server2 cls)
+server7 :: Server StaticAPI
+server7 = serveDirectoryWebApp "static-files"
 
+server8 :: Server MyApi
+server8 = serveDirectoryWebApp "/var/www"
+
+app3 :: Application
+app3 = serve staticAPI server7
+
+app4 :: Application
+app4 = serve myapi server8
+
+app5 :: Application
+app5 = serve testapi server100
+
+-- app6 :: Application
+-- app6 = serve rootapi server123
+
+--server200 :: Server ClassesAPI
+--server200 = return _

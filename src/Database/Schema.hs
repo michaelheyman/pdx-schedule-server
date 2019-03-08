@@ -2,28 +2,26 @@
 {-# LANGUAGE FlexibleContexts      #-}
 {-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE GADTs                 #-}
+{-# LANGUAGE ImpredicativeTypes    #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings     #-}
 {-# LANGUAGE StandaloneDeriving    #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE TypeSynonymInstances  #-}
-{-# LANGUAGE ImpredicativeTypes    #-}
 
 module Database.Schema where
 
-import           Control.Lens           (view, (^.)) -- TODO remove after testing lens
+import           Control.Lens           (view, (^.))
 import           Database.Beam
 import           Database.Beam.Backend
 import           Database.Beam.Migrate
 import           Database.Beam.Sqlite
-import           Database.SQLite.Simple         ( open
-                                                , Connection
-                                                )
+import           Database.SQLite.Simple (Connection, open)
 
-import           Data.Int                       ( Int64 )
-import           Data.Text                      ( Text )
-import           Data.Time                      ( UTCTime )
-import           Data.UUID                      ( UUID )
+import           Data.Int               (Int64)
+import           Data.Text              (Text)
+import           Data.Time              (UTCTime)
+import           Data.UUID              (UUID)
 
 import           Data.Aeson
 
@@ -38,12 +36,12 @@ data InstructorT f = Instructor
   , _instructorUrl          :: Columnar f (Maybe Text)
   } deriving (Generic)
 
-Instructor (LensFor instructorInstructorId) 
-           (LensFor instructorFullName) 
-           (LensFor instructorFirstName) 
-           (LensFor instructorLastName) 
-           (LensFor instructorRating) 
-           (LensFor instructorUrl) = 
+Instructor (LensFor instructorInstructorId)
+           (LensFor instructorFullName)
+           (LensFor instructorFirstName)
+           (LensFor instructorLastName)
+           (LensFor instructorRating)
+           (LensFor instructorUrl) =
            tableLenses
 
 type Instructor = InstructorT Identity
@@ -78,10 +76,10 @@ data CourseT f = Course
   , _courseDiscipline :: Columnar f Text
   } deriving (Generic)
 
-Course (LensFor courseId) 
-       (LensFor courseName) 
-       (LensFor courseClass) 
-       (LensFor courseDiscipline) = 
+Course (LensFor courseId)
+       (LensFor courseName)
+       (LensFor courseClass)
+       (LensFor courseDiscipline) =
        tableLenses
 
 type Course = CourseT Identity
@@ -109,11 +107,11 @@ instance ToJSON Course where
 -- Term
 
 data TermT f = Term
-  { _termDate         :: Columnar f Int64
-  , _termDescription  :: Columnar f Text
+  { _termDate        :: Columnar f Int64
+  , _termDescription :: Columnar f Text
   } deriving (Generic)
 
-Term (LensFor termDate) 
+Term (LensFor termDate)
      (LensFor termDescription) =
      tableLenses
 
@@ -151,7 +149,7 @@ data ClassOfferingT f = ClassOffering
   , _classOfferingTimestamp    :: Columnar f Text -- TODO: UTCTime
   } deriving (Generic)
 
-ClassOffering (LensFor classOfferingId) 
+ClassOffering (LensFor classOfferingId)
               (CourseId     (LensFor classOfferingCourseId))
               (InstructorId (LensFor classOfferingInstructorId))
               (TermDate     (LensFor classOfferingTerm))
