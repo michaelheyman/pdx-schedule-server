@@ -111,7 +111,7 @@ course1 :: Course
 course1 = Course 1 "functional programming" "cs457" "computer science"
 
 instructor1 :: Instructor
-instructor1 = Instructor 1 "mark p jones" (Just "mark") (Just "jones") (Just 4.8) (Just "url")
+instructor1 = Instructor 1 "mark p jones" (Just "mark") (Just "jones") (Just 4.8) (Just "url") "12:00PST"
 
 term1 :: Term
 term1 = Term 20190101 "winter 2019"

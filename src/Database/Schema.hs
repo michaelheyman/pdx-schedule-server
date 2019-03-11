@@ -34,6 +34,7 @@ data InstructorT f = Instructor
   , _instructorLastName     :: Columnar f (Maybe Text)
   , _instructorRating       :: Columnar f (Maybe Float)
   , _instructorUrl          :: Columnar f (Maybe Text)
+  , _instructorTimestamp    :: Columnar f Text
   } deriving (Generic)
 
 Instructor (LensFor instructorInstructorId)
@@ -41,7 +42,8 @@ Instructor (LensFor instructorInstructorId)
            (LensFor instructorFirstName)
            (LensFor instructorLastName)
            (LensFor instructorRating)
-           (LensFor instructorUrl) =
+           (LensFor instructorUrl)
+           (LensFor instructorTimestamp) =
            tableLenses
 
 type Instructor = InstructorT Identity
@@ -59,13 +61,14 @@ instance Table InstructorT where
   primaryKey = InstructorId . _instructorInstructorId
 
 instance ToJSON Instructor where
-  toJSON (Instructor id fullName firstName lastName rating url) =
+  toJSON (Instructor id fullName firstName lastName rating url timestamp) =
     object [ "id"        .= id
            , "fullName"  .= fullName
            , "firstName" .= firstName
            , "lastName"  .= lastName
            , "rating"    .= rating
-           , "url"       .= url  ]
+           , "url"       .= url
+           , "timestamp" .= timestamp ]
 
 -- Course
 
