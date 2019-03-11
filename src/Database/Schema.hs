@@ -149,7 +149,7 @@ data ClassOfferingT f = ClassOffering
   , _classOfferingDays         :: Columnar f Text
   , _classOfferingTime         :: Columnar f Text
   , _classOfferingCrn          :: Columnar f Int64
-  , _classOfferingTimestamp    :: Columnar f Text
+  , _classOfferingTimestamp    :: Columnar f LocalTime
   } deriving (Generic)
 
 ClassOffering (LensFor classOfferingId)

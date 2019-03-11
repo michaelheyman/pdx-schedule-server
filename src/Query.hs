@@ -130,7 +130,7 @@ classOfferingList = [ ClassOffering
     "TR"
     "08:00 am"
     40912
-    "timestamp" ]
+    timestamp1 ]
 
 classoffering1 :: ClassOffering
 classoffering1 = ClassOffering
@@ -142,7 +142,7 @@ classoffering1 = ClassOffering
     "TR"
     "08:00 am"
     40912
-    "timestamp"
+    timestamp1
 
 classQuery :: ClassQueryResult
 classQuery = (classoffering1, course1, instructor1, term1)

@@ -6,6 +6,7 @@ import           Control.Exception.Base (evaluate)
 
 import           Control.Lens           (view, (^.), _1, _2, _3, _4)
 import           Data.Aeson             (ToJSON (..), object, (.=))
+import           Data.Time              (LocalTime)
 import           Data.Text.Internal     (Text)
 import           Database.Schema
 import           GHC.Int                (Int64)
@@ -25,7 +26,7 @@ data Class = Class
   , days       :: Text
   , time       :: Text
   , crn        :: Int64
-  , timestamp  :: Text -- UTCTime
+  , timestamp  :: LocalTime
   } deriving (Show)
 
 instance ToJSON Class where
