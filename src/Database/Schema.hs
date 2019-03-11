@@ -20,7 +20,7 @@ import           Database.SQLite.Simple (Connection, open)
 
 import           Data.Int               (Int64)
 import           Data.Text              (Text)
-import           Data.Time              (UTCTime)
+import           Data.Time              (LocalTime)
 import           Data.UUID              (UUID)
 
 import           Data.Aeson
@@ -34,7 +34,7 @@ data InstructorT f = Instructor
   , _instructorLastName     :: Columnar f (Maybe Text)
   , _instructorRating       :: Columnar f (Maybe Float)
   , _instructorUrl          :: Columnar f (Maybe Text)
-  , _instructorTimestamp    :: Columnar f Text
+  , _instructorTimestamp    :: Columnar f LocalTime
   } deriving (Generic)
 
 Instructor (LensFor instructorInstructorId)
@@ -149,7 +149,7 @@ data ClassOfferingT f = ClassOffering
   , _classOfferingDays         :: Columnar f Text
   , _classOfferingTime         :: Columnar f Text
   , _classOfferingCrn          :: Columnar f Int64
-  , _classOfferingTimestamp    :: Columnar f Text -- TODO: UTCTime
+  , _classOfferingTimestamp    :: Columnar f Text
   } deriving (Generic)
 
 ClassOffering (LensFor classOfferingId)

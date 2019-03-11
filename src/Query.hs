@@ -14,6 +14,7 @@ import           Database.Schema
 import           Database.SQLite.Simple (Connection, open)
 import           Servant                (Handler)
 import           Types
+import Data.Time
 
 findClassList :: IO [ClassQueryResult]
 findClassList = do
@@ -107,11 +108,14 @@ ft = do
 
 -- Stub elements for testing
 
+timestamp1 :: LocalTime
+timestamp1 = LocalTime { localDay = ModifiedJulianDay 0, localTimeOfDay = TimeOfDay { todHour = 22, todMin = 22, todSec = 22} }
+
 course1 :: Course
 course1 = Course 1 "functional programming" "cs457" "computer science"
 
 instructor1 :: Instructor
-instructor1 = Instructor 1 "mark p jones" (Just "mark") (Just "jones") (Just 4.8) (Just "url") "12:00PST"
+instructor1 = Instructor 1 "mark p jones" (Just "mark") (Just "jones") (Just 4.8) (Just "url") timestamp1
 
 term1 :: Term
 term1 = Term 20190101 "winter 2019"
