@@ -10,12 +10,12 @@ import Control.Monad.IO.Class (liftIO)
 serveAPI :: Server API
 serveAPI = return classList
       :<|> return pageHTML
-      :<|> serveDirectoryFileServer "static/"
+      :<|> serveDirectoryWebApp "static-files"
 
 server :: Server API
 server = liftIO getClasses
       :<|> return pageHTML
-      :<|> serveDirectoryFileServer "static/"
+      :<|> serveDirectoryWebApp "../dist/resources"
 
 server2 :: [Class] -> Server ClassesAPI
 server2 = return

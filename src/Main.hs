@@ -10,7 +10,8 @@ import           Server
 
 main :: IO ()
 main = do
-  putStrLn ("Running server on http://localhost:" ++ show port ++ "/classes")
+  putStrLn ("Running server: " ++ "http://localhost:" ++ show port
+           ++ "\nRunning API: " ++ "\thttp://localhost:" ++ show port ++ "/classes")
   run port (simpleCors app)
  where
   app  = serve api server
