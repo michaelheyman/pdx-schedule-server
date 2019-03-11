@@ -28,12 +28,12 @@ findClassList = do
                                    (_classOfferingInstructorId classOffering)
          term          <- related_ (scheduleDb ^. scheduleTerm)
                                    (_classOfferingTerm classOffering)
-         pure (classOffering, course, instructor, term)
+         return (classOffering, course, instructor, term)
 
 getClasses :: IO [Class]
-getClasses = findClassList >>= pure . map toClass
+getClasses = findClassList >>= return . map toClass
 -- getClasses = do c <- findClassList
---                 pure (map toClass c)
+--                 return (map toClass c)
 
 getAllTerms :: ReaderT Connection Handler [Term]
 getAllTerms = do
@@ -92,7 +92,7 @@ findClasses conn = runBeamSqlite conn $ do
                            (_classOfferingInstructorId classOffering)
     term <- related_ (scheduleDb ^. scheduleTerm)
                      (_classOfferingTerm classOffering)
-    pure (classOffering, course, instructor, term)
+    return (classOffering, course, instructor, term)
   mapM_ (liftIO . print) json
 
 findTermList :: Connection -> IO [Term]

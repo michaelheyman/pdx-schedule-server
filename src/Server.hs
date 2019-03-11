@@ -14,14 +14,13 @@ server = return classList
 -- serverx :: Server ClassesAPI
 -- serverx = do res <- findClassList
 --              cls <- evaluate $ map toClass res
---              pure cls
+--              return cls
 
 serveAPI :: Server API
 serveAPI = return classList
       :<|> return pageHTML
       :<|> serveDirectoryFileServer "static/"
 
--- TODO: get this to work
 serverP :: Server ClassesAPI
 serverP = liftIO getClasses
 
