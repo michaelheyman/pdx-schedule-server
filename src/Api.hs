@@ -19,9 +19,10 @@ import           Servant.HTML.Lucid
 import           Types
 
 type ClassOfferingAPI = "classes" :> Get '[JSON] [ClassOffering]
-type ClassesAPI = "classes" :> Get '[JSON] [Class]
-type API = "classes" :> Get '[JSON] [Class] :<|>
-           Get '[HTML] (Html ())
+type ClassesAPI       = "classes" :> Get '[JSON] [Class]
+type API              = "classes" :> Get '[JSON] [Class]
+                   :<|> Get '[HTML] (Html ())
+                   :<|> Raw
 
 classOfferingAPI :: Proxy ClassOfferingAPI
 classOfferingAPI = Proxy :: Proxy ClassOfferingAPI
@@ -29,13 +30,13 @@ classOfferingAPI = Proxy :: Proxy ClassOfferingAPI
 classesAPI :: Proxy ClassesAPI
 classesAPI = Proxy :: Proxy ClassesAPI
 
+api :: Proxy API
+api = Proxy
+
 type StaticAPI = "static" :> Raw
 
 staticAPI :: Proxy StaticAPI
 staticAPI = Proxy
-
-api :: Proxy API
-api = Proxy
 
 type MyApi = "static" :> Raw
 

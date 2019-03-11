@@ -2,7 +2,7 @@
 
 module Query where
 
-import           Control.Exception.Base (evaluate)
+import Control.Exception.Base (evaluate)
 
 import           Control.Lens           ((^.))
 import           Control.Monad.Reader   (ReaderT, ask, liftIO)
@@ -29,6 +29,11 @@ findClassList = do
          term          <- related_ (scheduleDb ^. scheduleTerm)
                                    (_classOfferingTerm classOffering)
          pure (classOffering, course, instructor, term)
+
+getClasses :: IO [Class]
+getClasses = findClassList >>= pure . map toClass
+-- getClasses = do c <- findClassList
+--                 pure (map toClass c)
 
 getAllTerms :: ReaderT Connection Handler [Term]
 getAllTerms = do

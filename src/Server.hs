@@ -4,6 +4,8 @@ import           Api
 import           Query
 import           Servant
 import           Types
+import Control.Monad.Trans.Class (lift)
+import Control.Monad.IO.Class (liftIO)
 
 server :: Server ClassesAPI
 server = return classList
@@ -15,7 +17,13 @@ server = return classList
 --              pure cls
 
 serveAPI :: Server API
-serveAPI = return classList :<|> return pageHTML
+serveAPI = return classList
+      :<|> return pageHTML
+      :<|> serveDirectoryFileServer "static/"
+
+-- TODO: get this to work
+serverP :: Server ClassesAPI
+serverP = liftIO getClasses
 
 server2 :: [Class] -> Server ClassesAPI
 server2 = return
