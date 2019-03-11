@@ -7,22 +7,15 @@ import           Types
 import Control.Monad.Trans.Class (lift)
 import Control.Monad.IO.Class (liftIO)
 
-server :: Server ClassesAPI
-server = return classList
--- [Class]
-
--- serverx :: Server ClassesAPI
--- serverx = do res <- findClassList
---              cls <- evaluate $ map toClass res
---              return cls
-
 serveAPI :: Server API
 serveAPI = return classList
       :<|> return pageHTML
       :<|> serveDirectoryFileServer "static/"
 
-serverP :: Server ClassesAPI
-serverP = liftIO getClasses
+server :: Server API
+server = liftIO getClasses
+      :<|> return pageHTML
+      :<|> serveDirectoryFileServer "static/"
 
 server2 :: [Class] -> Server ClassesAPI
 server2 = return
@@ -32,9 +25,6 @@ serverNonDb = return classOfferingList
 
 appNonDb :: Application
 appNonDb = serve classOfferingAPI serverNonDb
-
-app :: Application
-app = serve classesAPI server
 
 server7 :: Server StaticAPI
 server7 = serveDirectoryWebApp "static-files"
