@@ -1,51 +1,35 @@
+{-# LANGUAGE OverloadedStrings #-}
+
 module Server where
 
 import           Api
-import           Control.Monad.IO.Class    (liftIO)
-import           Control.Monad.Trans.Class (lift)
+import           Control.Monad.IO.Class (liftIO)
+import           Data.Text              (Text)
+import           Lucid
 import           Query
 import           Servant
-import           Types
-
-serveAPI :: Server API
-serveAPI = return classList
-      :<|> return pageHTML
-      :<|> serveDirectoryWebApp "static-files"
 
 server :: Server API
 server = liftIO getClasses
       :<|> return pageHTML
       :<|> serveDirectoryWebApp "../dist/resources"
 
-server2 :: [Class] -> Server ClassesAPI
-server2 = return
-
-serverNonDb :: Server ClassOfferingAPI
-serverNonDb = return classOfferingList
-
-appNonDb :: Application
-appNonDb = serve classOfferingAPI serverNonDb
-
-server7 :: Server StaticAPI
-server7 = serveDirectoryWebApp "static-files"
-
-server8 :: Server MyApi
-server8 = serveDirectoryWebApp "/var/www"
-
-app3 :: Application
-app3 = serve staticAPI server7
-
-app4 :: Application
-app4 = serve myapi server8
-
-app5 :: Application
-app5 = serve testapi server100
-
--- app6 :: Application
--- app6 = serve rootapi server123
-
---server200 :: Server ClassesAPI
---server200 = return _
-
-appAPI :: Application
-appAPI = serve api serveAPI
+pageHTML :: Html ()
+pageHTML = do
+  head_ $ do
+    meta_ [ charset_ "UTF-8" ]
+    meta_ [ name_    "viewport"
+          , content_ "width=device-width, initial-scale=1, shrink-to-fit=no"
+          ]
+    script_ [ src_ "main.js" ] ("" :: Text)
+    link_ [ rel_ "stylesheet"
+          , href_ "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" ]
+    link_ [ rel_ "stylesheet"
+          , href_ "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" ]
+  body_ $ do
+    div_ [ id_ "elm"] $ do
+      p_ "Example"
+      p_ "Example"
+    script_ [] ("var app = Elm.Main.init({              \n\
+                 \    node: document.getElementById('elm') \n\
+                 \});" :: Text)

@@ -2,8 +2,6 @@
 
 module Query where
 
-import           Control.Exception.Base (evaluate)
-
 import           Control.Lens           ((^.))
 import           Control.Monad.Reader   (ReaderT, ask, liftIO)
 import           Data.Time              (Day (..), LocalTime (..),
@@ -15,7 +13,7 @@ import           Database.Beam.Sqlite   (runBeamSqlite, runBeamSqliteDebug)
 import           Database.Schema
 import           Database.SQLite.Simple (Connection, open)
 import           Servant                (Handler)
-import           Types
+import           Types                  (ClassQueryResult, Class, toClass)
 
 findClassList :: IO [ClassQueryResult]
 findClassList = do
@@ -34,8 +32,6 @@ findClassList = do
 
 getClasses :: IO [Class]
 getClasses = findClassList >>= return . map toClass
--- getClasses = do c <- findClassList
---                 return (map toClass c)
 
 getAllTerms :: ReaderT Connection Handler [Term]
 getAllTerms = do
@@ -111,7 +107,7 @@ term1 = Term 20190101 "winter 2019"
 classOfferingList :: [ClassOffering]
 classOfferingList = [ ClassOffering
     1
-    (CourseId     (_courseId course1))
+    (CourseId     (_courseCourseId course1))
     (InstructorId (_instructorInstructorId instructor1))
     (TermDate     (_termDate term1))
     4
@@ -123,7 +119,7 @@ classOfferingList = [ ClassOffering
 classoffering1 :: ClassOffering
 classoffering1 = ClassOffering
     1
-    (CourseId     (_courseId course1))
+    (CourseId     (_courseCourseId course1))
     (InstructorId (_instructorInstructorId instructor1))
     (TermDate     (_termDate term1))
     4

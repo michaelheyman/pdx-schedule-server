@@ -2,9 +2,7 @@
 
 module Types where
 
-import           Control.Exception.Base (evaluate)
-
-import           Control.Lens           (view, (^.), _1, _2, _3, _4)
+import           Control.Lens           (view, _1, _2, _3, _4)
 import           Data.Aeson             (ToJSON (..), object, (.=))
 import           Data.Text.Internal     (Text)
 import           Data.Time              (LocalTime)
@@ -18,15 +16,15 @@ type ClassQueryResult =
   , Term)
 
 data Class = Class
-  { classId    :: Int64
-  , course     :: Course
-  , instructor :: Maybe Instructor
-  , term       :: Term
-  , credits    :: Int64
-  , days       :: Text
-  , time       :: Text
-  , crn        :: Int64
-  , timestamp  :: LocalTime
+  { classClassId    :: Int64
+  , classCourse     :: Course
+  , classInstructor :: Maybe Instructor
+  , classTerm       :: Term
+  , classCredits    :: Int64
+  , classDays       :: Text
+  , classTime       :: Text
+  , classCrn        :: Int64
+  , classTimestamp  :: LocalTime
   } deriving (Show)
 
 instance ToJSON Class where

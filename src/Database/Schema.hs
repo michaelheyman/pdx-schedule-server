@@ -11,17 +11,11 @@
 
 module Database.Schema where
 
-import           Control.Lens           (view, (^.))
 import           Database.Beam
-import           Database.Beam.Backend
-import           Database.Beam.Migrate
-import           Database.Beam.Sqlite
-import           Database.SQLite.Simple (Connection, open)
 
 import           Data.Int               (Int64)
 import           Data.Text              (Text)
 import           Data.Time              (LocalTime)
-import           Data.UUID              (UUID)
 
 import           Data.Aeson
 
@@ -61,8 +55,8 @@ instance Table InstructorT where
   primaryKey = InstructorId . _instructorInstructorId
 
 instance ToJSON Instructor where
-  toJSON (Instructor id fullName firstName lastName rating url timestamp) =
-    object [ "id"        .= id
+  toJSON (Instructor instructorId fullName firstName lastName rating url timestamp) =
+    object [ "id"        .= instructorId
            , "fullName"  .= fullName
            , "firstName" .= firstName
            , "lastName"  .= lastName
@@ -73,13 +67,13 @@ instance ToJSON Instructor where
 -- Course
 
 data CourseT f = Course
-  { _courseId         :: Columnar f Int64
+  { _courseCourseId   :: Columnar f Int64
   , _courseName       :: Columnar f Text
   , _courseClass      :: Columnar f Text
   , _courseDiscipline :: Columnar f Text
   } deriving (Generic)
 
-Course (LensFor courseId)
+Course (LensFor courseCourseId)
        (LensFor courseName)
        (LensFor courseClass)
        (LensFor courseDiscipline) =
@@ -97,7 +91,7 @@ instance Beamable CourseT
 instance Beamable (PrimaryKey CourseT)
 instance Table CourseT where
   data PrimaryKey CourseT f = CourseId (Columnar f Int64) deriving Generic
-  primaryKey = CourseId . _courseId
+  primaryKey = CourseId . _courseCourseId
 
 instance ToJSON Course where
   toJSON (Course courseId name number discipline) =
@@ -209,7 +203,7 @@ ScheduleDB (TableLens scheduleCourse)
 scheduleDb :: DatabaseSettings be ScheduleDB
 scheduleDb = defaultDbSettings `withDbModification` dbModification
   { _scheduleCourse        = modifyTable id $ tableModification
-                               { _courseId         = fieldNamed "CourseId"
+                               { _courseCourseId   = fieldNamed "CourseId"
                                , _courseName       = fieldNamed "Name"
                                , _courseClass      = fieldNamed "Class"
                                , _courseDiscipline = fieldNamed "Discipline"
