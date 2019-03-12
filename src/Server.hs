@@ -12,7 +12,7 @@ import           Servant
 server :: Server API
 server = liftIO getClasses
       :<|> return pageHTML
-      :<|> serveDirectoryWebApp "../dist/resources"
+      :<|> serveDirectoryWebApp "dist/resources"
 
 pageHTML :: Html ()
 pageHTML = do

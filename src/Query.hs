@@ -17,7 +17,7 @@ import           Types                  (ClassQueryResult, Class, toClass)
 
 findClassList :: IO [ClassQueryResult]
 findClassList = do
-  conn <- open "app.db"
+  conn <- open "dist/resources/app.db"
   runBeamSqliteDebug putStrLn conn
     $ runSelectReturningList
     $ select
