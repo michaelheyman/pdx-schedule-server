@@ -6,3 +6,5 @@ dist/build
 dist/dist-sandbox-*
 dist/package*
 dist/*config*
+.ghc*
+dist-newstyle/
