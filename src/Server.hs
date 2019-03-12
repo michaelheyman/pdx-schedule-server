@@ -1,11 +1,11 @@
 module Server where
 
 import           Api
+import           Control.Monad.IO.Class    (liftIO)
+import           Control.Monad.Trans.Class (lift)
 import           Query
 import           Servant
 import           Types
-import Control.Monad.Trans.Class (lift)
-import Control.Monad.IO.Class (liftIO)
 
 serveAPI :: Server API
 serveAPI = return classList

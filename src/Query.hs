@@ -2,10 +2,12 @@
 
 module Query where
 
-import Control.Exception.Base (evaluate)
+import           Control.Exception.Base (evaluate)
 
 import           Control.Lens           ((^.))
 import           Control.Monad.Reader   (ReaderT, ask, liftIO)
+import           Data.Time              (Day (..), LocalTime (..),
+                                         TimeOfDay (..))
 import           Database.Beam.Query    (all_, guard_, related_,
                                          runSelectReturningList, select, val_,
                                          (==.))
@@ -14,7 +16,6 @@ import           Database.Schema
 import           Database.SQLite.Simple (Connection, open)
 import           Servant                (Handler)
 import           Types
-import Data.Time
 
 findClassList :: IO [ClassQueryResult]
 findClassList = do
@@ -81,19 +82,6 @@ findMarkJones conn = runBeamSqlite conn $ do
     instructors <- all_ (scheduleDb ^. scheduleInstructor)
     guard_ (instructors ^. instructorFullName ==. val_ "Mark P. Jones")
     return instructors
-  mapM_ (liftIO . print) json
-
-findClasses :: Connection -> IO ()
-findClasses conn = runBeamSqlite conn $ do
-  json <- runSelectReturningList $ select $ do
-    classOffering <- all_ (scheduleDb ^. scheduleClassOffering)
-    course        <- related_ (scheduleDb ^. scheduleCourse)
-                              (_classOfferingCourseId classOffering)
-    instructor <- related_ (scheduleDb ^. scheduleInstructor)
-                           (_classOfferingInstructorId classOffering)
-    term <- related_ (scheduleDb ^. scheduleTerm)
-                     (_classOfferingTerm classOffering)
-    return (classOffering, course, instructor, term)
   mapM_ (liftIO . print) json
 
 findTermList :: Connection -> IO [Term]

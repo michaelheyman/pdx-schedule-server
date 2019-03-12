@@ -6,8 +6,8 @@ import           Control.Exception.Base (evaluate)
 
 import           Control.Lens           (view, (^.), _1, _2, _3, _4)
 import           Data.Aeson             (ToJSON (..), object, (.=))
-import           Data.Time              (LocalTime)
 import           Data.Text.Internal     (Text)
+import           Data.Time              (LocalTime)
 import           Database.Schema
 import           GHC.Int                (Int64)
 
