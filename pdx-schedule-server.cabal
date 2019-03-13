@@ -19,6 +19,7 @@ executable pdx-schedule-server
   main-is:             Main.hs
   other-modules:       Api
                      , Database.Schema
+                     , Globals
                      , Query
                      , Server
                      , Types

@@ -5,6 +5,7 @@ module Server where
 import           Api
 import           Control.Monad.IO.Class (liftIO)
 import           Data.Text              (Text)
+import           Globals                (bootstrapUrl, fontAwesomeUrl)
 import           Lucid
 import           Query
 import           Servant
@@ -23,13 +24,11 @@ pageHTML = do
           ]
     script_ [ src_ "main.js" ] ("" :: Text)
     link_ [ rel_ "stylesheet"
-          , href_ "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" ]
+          , href_ bootstrapUrl ]
     link_ [ rel_ "stylesheet"
-          , href_ "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" ]
+          , href_ fontAwesomeUrl ]
   body_ $ do
-    div_ [ id_ "elm"] $ do
-      p_ "Example"
-      p_ "Example"
+    div_ [ id_ "elm"] ""
     script_ [] ("var app = Elm.Main.init({              \n\
                  \    node: document.getElementById('elm') \n\
                  \});" :: Text)

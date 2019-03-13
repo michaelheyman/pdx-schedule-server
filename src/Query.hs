@@ -12,12 +12,13 @@ import           Database.Beam.Query    (all_, guard_, related_,
 import           Database.Beam.Sqlite   (runBeamSqlite, runBeamSqliteDebug)
 import           Database.Schema
 import           Database.SQLite.Simple (Connection, open)
+import           Globals                (database)
 import           Servant                (Handler)
 import           Types                  (ClassQueryResult, Class, toClass)
 
 findClassList :: IO [ClassQueryResult]
 findClassList = do
-  conn <- open "dist/resources/app.db"
+  conn <- open database
   runBeamSqliteDebug putStrLn conn
     $ runSelectReturningList
     $ select
@@ -44,14 +45,14 @@ getAllTerms = do
 
 fullTermList :: IO [Term]
 fullTermList = do
-  conn <- open "app.db"
+  conn <- open database
   runBeamSqliteDebug putStrLn conn
     $ runSelectReturningList
     $ select (all_ (_scheduleTerm scheduleDb))
 
 fullClassList :: IO [ClassOffering]
 fullClassList = do
-  conn <- open "app.db"
+  conn <- open database
   runBeamSqliteDebug putStrLn conn
     $ runSelectReturningList
     $ select (all_ (_scheduleClassOffering scheduleDb))
@@ -61,11 +62,6 @@ findInstructors conn = runBeamSqlite conn $ do
   instructors <- runSelectReturningList
     $ select (all_ (_scheduleInstructor scheduleDb))
   mapM_ (liftIO . print) instructors
-
--- listTerms :: ( IsSql92Syntax cmd, Sql92SanityCheck cmd
---              , MonadBeam cmd be hdl m)
---             => m [Term]
--- listTerms = runSelectReturningList $ select (all_ (_scheduleTerm scheduleDb))
 
 findTerms :: Connection -> IO ()
 findTerms conn = runBeamSqlite conn $ do
@@ -86,7 +82,7 @@ findTermList conn = runBeamSqlite conn $ runSelectReturningList $ select
 
 ft :: IO [Term]
 ft = do
-  conn <- open "app.db"
+  conn <- open database
   runBeamSqlite conn $ runSelectReturningList $ select
     (all_ (_scheduleTerm scheduleDb))
 
