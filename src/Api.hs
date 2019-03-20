@@ -10,7 +10,7 @@ import           Types
 
 type API = "classes" :> Get '[JSON] [Class]
       :<|> Get '[HTML] (Html ())
-      :<|> Raw
+      :<|> "static" :> Raw
 
 api :: Proxy API
 api = Proxy
