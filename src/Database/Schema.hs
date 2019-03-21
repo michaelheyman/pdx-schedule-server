@@ -11,11 +11,11 @@
 
 module Database.Schema where
 
-import           Database.Beam hiding (timestamp, time)
+import           Database.Beam hiding (time, timestamp)
 
-import           Data.Int               (Int64)
-import           Data.Text              (Text)
-import           Data.Time              (LocalTime)
+import           Data.Int      (Int64)
+import           Data.Text     (Text)
+import           Data.Time     (LocalTime)
 
 import           Data.Aeson
 

@@ -3,13 +3,13 @@
 module Query where
 
 import           Control.Lens           ((^.))
-import           Database.Beam.Query    (all_, related_,
-                                         runSelectReturningList, select)
+import           Database.Beam.Query    (all_, related_, runSelectReturningList,
+                                         select)
 import           Database.Beam.Sqlite   (runBeamSqliteDebug)
 import           Database.Schema
 import           Database.SQLite.Simple (open)
 import           Globals                (database)
-import           Types                  (ClassQueryResult, Class, toClass)
+import           Types                  (Class, ClassQueryResult, toClass)
 
 findClassList :: IO [ClassQueryResult]
 findClassList = do
