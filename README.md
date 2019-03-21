@@ -8,8 +8,20 @@ Backend implementation in Haskell for [pdx-schedule](https://github.com/michaelh
 cabal new-build
 ```
 
+or
+
+```
+stack build
+```
+
 ## Run
 
 ```
 cabal new-run
+```
+
+or
+
+```
+stack run
 ```

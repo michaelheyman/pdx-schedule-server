@@ -8,3 +8,4 @@ dist/package*
 dist/*config*
 .ghc*
 dist-newstyle/
+.stack-work/
