@@ -11,7 +11,7 @@
 
 module Database.Schema where
 
-import           Database.Beam
+import           Database.Beam hiding (timestamp, time)
 
 import           Data.Int               (Int64)
 import           Data.Text              (Text)
@@ -108,8 +108,8 @@ data TermT f = Term
   , _termDescription :: Columnar f Text
   } deriving (Generic)
 
-Term (LensFor termDate)
-     (LensFor termDescription) =
+Term (LensFor lensTermDate)
+     (LensFor lensTermDescription) =
      tableLenses
 
 type Term = TermT Identity
@@ -127,10 +127,9 @@ instance Table TermT where
   primaryKey = TermDate . _termDate
 
 instance ToJSON Term where
-  toJSON (Term date description) =
-    object [ "date"        .= date
-           , "description" .= description ]
-
+  toJSON (Term termDate termDescription) =
+    object [ "date"        .= termDate
+           , "description" .= termDescription ]
 
 -- ClassOffering
 
@@ -202,13 +201,15 @@ ScheduleDB (TableLens scheduleCourse)
 
 scheduleDb :: DatabaseSettings be ScheduleDB
 scheduleDb = defaultDbSettings `withDbModification` dbModification
-  { _scheduleCourse        = modifyTable id $ tableModification
+  { _scheduleCourse        = setEntityName "Course" <>
+                             modifyTableFields tableModification
                                { _courseCourseId   = fieldNamed "CourseId"
                                , _courseName       = fieldNamed "Name"
                                , _courseClass      = fieldNamed "Class"
                                , _courseDiscipline = fieldNamed "Discipline"
                                }
-  , _scheduleInstructor    = modifyTable id $ tableModification
+  , _scheduleInstructor    = setEntityName "Instructor" <>
+                             modifyTableFields tableModification
                                { _instructorInstructorId = fieldNamed
                                                              "InstructorId"
                                , _instructorFullName     = fieldNamed "FullName"
@@ -217,12 +218,14 @@ scheduleDb = defaultDbSettings `withDbModification` dbModification
                                , _instructorRating       = fieldNamed "Rating"
                                , _instructorUrl          = fieldNamed "URL"
                                }
-  , _scheduleTerm          = modifyTable id $ tableModification
+  , _scheduleTerm          = setEntityName "Term" <>
+                             modifyTableFields tableModification
                                { _termDate        = fieldNamed "Date"
                                , _termDescription = fieldNamed "Description"
                                }
   , _scheduleClassOffering =
-    modifyTable (\_ -> "ClassOffering") $ tableModification
+      setEntityName "ClassOffering" <>
+      modifyTableFields tableModification
       { _classOfferingId           = fieldNamed "ClassOfferingId"
       , _classOfferingCourseId     = CourseId $ fieldNamed "CourseId"
       , _classOfferingInstructorId = InstructorId "InstructorId"
