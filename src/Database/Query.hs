@@ -1,4 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
+-- |
+-- Module:      Database.Query
+-- Copyright:   (c) 2019 Michael Heyman
+-- License:     MIT
+-- Maintainer:  Michael Heyman <contact@mheyman.com>
+-- Stability:   experimental
+-- Portability: portable
+--
+-- Module for database queries.
 
 module Database.Query where
 

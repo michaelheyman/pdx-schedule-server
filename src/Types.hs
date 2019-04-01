@@ -1,4 +1,14 @@
 {-# LANGUAGE OverloadedStrings #-}
+-- |
+-- Module:      Types
+-- Copyright:   (c) 2019 Michael Heyman
+-- License:     MIT
+-- Maintainer:  Michael Heyman <contact@mheyman.com>
+-- Stability:   experimental
+-- Portability: portable
+--
+-- Defines types needed for the representation of the API endpoint that returns
+-- database JSON.
 
 module Types where
 

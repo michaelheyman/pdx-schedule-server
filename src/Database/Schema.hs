@@ -8,6 +8,15 @@
 {-# LANGUAGE StandaloneDeriving    #-}
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE TypeSynonymInstances  #-}
+-- |
+-- Module:      Database.Schema
+-- Copyright:   (c) 2019 Michael Heyman
+-- License:     MIT
+-- Maintainer:  Michael Heyman <contact@mheyman.com>
+-- Stability:   experimental
+-- Portability: portable
+--
+-- Schema definition for accessing the database.
 
 module Database.Schema where
 

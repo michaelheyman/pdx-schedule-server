@@ -1,3 +1,13 @@
+-- |
+-- Module:      Main
+-- Copyright:   (c) 2019 Michael Heyman
+-- License:     MIT
+-- Maintainer:  Michael Heyman <contact@mheyman.com>
+-- Stability:   experimental
+-- Portability: portable
+--
+-- Program entry-point that runs the server.
+
 module Main (main) where
 
 import           Api

@@ -1,4 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
+-- |
+-- Module:      Server
+-- Copyright:   (c) 2019 Michael Heyman
+-- License:     MIT
+-- Maintainer:  Michael Heyman <contact@mheyman.com>
+-- Stability:   experimental
+-- Portability: portable
+--
+-- Defines server behavior when the API endpoints are accessed.
 
 module Server where
 

@@ -1,4 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
+-- |
+-- Module:      Globals
+-- Copyright:   (c) 2019 Michael Heyman
+-- License:     MIT
+-- Maintainer:  Michael Heyman <contact@mheyman.com>
+-- Stability:   experimental
+-- Portability: portable
+--
+-- Global strings that are used in the project.
 
 module Globals where
 
