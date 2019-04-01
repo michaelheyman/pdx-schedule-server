@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Query where
+module Database.Query where
 
 import           Control.Lens           ((^.))
 import           Database.Beam.Query    (all_, related_, runSelectReturningList,

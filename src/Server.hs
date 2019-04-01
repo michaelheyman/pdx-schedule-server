@@ -5,9 +5,9 @@ module Server where
 import           Api
 import           Control.Monad.IO.Class (liftIO)
 import           Data.Text              (Text, empty)
+import           Database.Query         (getClasses)
 import           Globals                (bootstrapUrl, fontAwesomeUrl)
 import           Lucid
-import           Query                  (getClasses)
 import           Servant
 
 server :: Server API

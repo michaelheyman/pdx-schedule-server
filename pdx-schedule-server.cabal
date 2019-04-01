@@ -18,9 +18,9 @@ cabal-version:       >=1.10
 executable pdx-schedule-server
   main-is:             Main.hs
   other-modules:       Api
+                     , Database.Query
                      , Database.Schema
                      , Globals
-                     , Query
                      , Server
                      , Types
   -- other-extensions:
