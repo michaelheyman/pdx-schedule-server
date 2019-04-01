@@ -5,7 +5,7 @@ module Api where
 
 import           Lucid
 import           Servant
-import           Servant.HTML.Lucid
+import           Servant.HTML.Lucid (HTML)
 import           Types
 
 type API = "classes" :> Get '[JSON] [Class]

@@ -7,7 +7,7 @@ import           Control.Monad.IO.Class (liftIO)
 import           Data.Text              (Text, empty)
 import           Globals                (bootstrapUrl, fontAwesomeUrl)
 import           Lucid
-import           Query
+import           Query                  (getClasses)
 import           Servant
 
 server :: Server API
